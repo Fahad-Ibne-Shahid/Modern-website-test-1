@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Let's Cook AI | Preview</title>
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --panel: rgba(255, 255, 255, 0.055);
+        --muted: rgba(255, 255, 255, 0.64);
+        --line: rgba(255, 255, 255, 0.12);
+        --flame: #ff6b35;
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        background: radial-gradient(circle at 50% -10%, rgba(255, 107, 53, .24), transparent 30%), linear-gradient(180deg, #0a0a0a, #111, #0a0a0a);
+        color: white;
+        font-family: Inter, Satoshi, "Space Grotesk", system-ui, sans-serif;
+        overflow-x: hidden;
+      }
+      body:before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        opacity: .32;
+        background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+        background-size: 72px 72px;
+        mask-image: radial-gradient(circle at center, black, transparent 72%);
+      }
+      a { color: inherit; text-decoration: none; }
+      .nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 10;
+        padding: 16px clamp(20px, 5vw, 48px);
+        background: rgba(10,10,10,.68);
+        border-bottom: 1px solid rgba(255,255,255,.09);
+        backdrop-filter: blur(20px);
+      }
+      .nav-inner, .wrap { max-width: 1240px; margin: 0 auto; }
+      .nav-inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+      .brand { display: flex; align-items: center; gap: 12px; font-weight: 950; letter-spacing: -.02em; }
+      .logo {
+        width: 42px;
+        height: 42px;
+        display: grid;
+        place-items: center;
+        border-radius: 16px;
+        background: var(--flame);
+        box-shadow: 0 0 40px rgba(255,107,53,.35);
+      }
+      .tag { display: block; margin-top: 3px; color: rgba(255,255,255,.48); font-size: 11px; letter-spacing: .22em; text-transform: uppercase; }
+      .links { display: flex; align-items: center; gap: 28px; color: rgba(255,255,255,.68); font-size: 14px; font-weight: 750; }
+      .links a:hover { color: var(--flame); }
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        border-radius: 999px;
+        padding: 15px 26px;
+        border: 1px solid transparent;
+        font-weight: 950;
+        transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+      }
+      .button:hover { transform: scale(1.05); box-shadow: 0 0 40px rgba(255,107,53,.3); }
+      .button.primary { background: var(--flame); color: white; }
+      .button.ghost { background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.18); }
+      .button.ghost:hover { border-color: var(--flame); color: var(--flame); }
+      .hero {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 140px 20px 80px;
+        text-align: center;
+        position: relative;
+      }
+      .orb {
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: rgba(255,107,53,.7);
+        animation: float 7s ease-in-out infinite;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 30px;
+        padding: 9px 15px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,107,53,.32);
+        background: rgba(255,107,53,.1);
+        color: #ffe3d8;
+        font-size: 14px;
+        font-weight: 850;
+        box-shadow: 0 0 40px rgba(255,107,53,.18);
+      }
+      h1 {
+        max-width: 1120px;
+        margin: 0 auto;
+        font-size: clamp(58px, 10vw, 112px);
+        line-height: .9;
+        letter-spacing: 0;
+        text-wrap: balance;
+      }
+      .flame { color: var(--flame); }
+      .hero p {
+        max-width: 760px;
+        margin: 30px auto 0;
+        color: rgba(255,255,255,.68);
+        font-size: clamp(18px, 2vw, 24px);
+        line-height: 1.55;
+      }
+      .cta-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; margin-top: 38px; }
+      section { padding: 96px 20px; position: relative; }
+      .kicker {
+        display: inline-flex;
+        padding: 7px 12px;
+        border: 1px solid rgba(255,107,53,.25);
+        border-radius: 999px;
+        background: rgba(255,107,53,.1);
+        color: var(--flame);
+        font-size: 12px;
+        font-weight: 950;
+        letter-spacing: .24em;
+        text-transform: uppercase;
+      }
+      h2 {
+        margin: 18px 0 44px;
+        max-width: 760px;
+        font-size: clamp(42px, 6vw, 68px);
+        line-height: 1;
+        letter-spacing: 0;
+      }
+      .grid-4, .grid-3 { display: grid; gap: 20px; }
+      .grid-4 { grid-template-columns: repeat(4, 1fr); }
+      .grid-3 { grid-template-columns: repeat(3, 1fr); }
+      .card {
+        border: 1px solid var(--line);
+        background: var(--panel);
+        border-radius: 24px;
+        padding: 28px;
+        box-shadow: 0 24px 80px rgba(0,0,0,.35);
+        backdrop-filter: blur(18px);
+        transition: transform .26s ease, border-color .26s ease, box-shadow .26s ease, background .26s ease;
+      }
+      .card:hover {
+        transform: translateY(-8px);
+        border-color: rgba(255,107,53,.45);
+        background: linear-gradient(135deg, rgba(255,107,53,.24), rgba(255,255,255,.06));
+        box-shadow: 0 0 40px rgba(255,107,53,.25);
+      }
+      .icon {
+        width: 56px;
+        height: 56px;
+        display: grid;
+        place-items: center;
+        margin-bottom: 30px;
+        border-radius: 18px;
+        background: rgba(255,107,53,.12);
+        color: var(--flame);
+        font-size: 25px;
+      }
+      .card h3 { margin: 0; font-size: 24px; }
+      .card p, .muted { color: var(--muted); line-height: 1.7; }
+      .recipe { position: relative; }
+      .recipe:before {
+        content: "";
+        position: absolute;
+        top: 40px;
+        left: 16%;
+        right: 16%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--flame), transparent);
+      }
+      .step { text-align: center; position: relative; }
+      .number {
+        width: 80px;
+        height: 80px;
+        display: grid;
+        place-items: center;
+        margin: 0 auto 22px;
+        border-radius: 50%;
+        background: var(--flame);
+        font-size: 26px;
+        font-weight: 950;
+        box-shadow: 0 0 40px rgba(255,107,53,.35);
+      }
+      .stats {
+        padding: 1px;
+        border-radius: 28px;
+        background: linear-gradient(135deg, var(--flame), rgba(255,255,255,.15), transparent);
+        box-shadow: 0 0 40px rgba(255,107,53,.24);
+      }
+      .stats-inner { border-radius: 28px; background: rgba(13,13,13,.96); padding: 44px; }
+      .stat { text-align: center; }
+      .stat strong { display: block; font-size: clamp(38px, 5vw, 54px); }
+      .stat span { color: var(--flame); font-size: 13px; font-weight: 950; letter-spacing: .16em; text-transform: uppercase; }
+      .thumb {
+        position: relative;
+        aspect-ratio: 16 / 9;
+        margin: -28px -28px 24px;
+        border-radius: 24px 24px 0 0;
+        overflow: hidden;
+        background: linear-gradient(135deg, var(--flame), #ff9a3d, #20100d);
+      }
+      .thumb.two { background: linear-gradient(135deg, var(--flame), #f43f5e, #0f172a); }
+      .thumb.three { background: linear-gradient(135deg, var(--flame), #22d3ee, #111827); }
+      .thumb:after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.35), transparent 22%), linear-gradient(135deg, transparent, rgba(0,0,0,.65)); }
+      .play {
+        position: absolute;
+        z-index: 1;
+        left: 50%;
+        top: 50%;
+        width: 64px;
+        height: 64px;
+        transform: translate(-50%, -50%);
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: white;
+        color: black;
+        font-weight: 950;
+      }
+      .metric { position: absolute; z-index: 1; left: 20px; top: 20px; padding: 6px 10px; border-radius: 999px; background: rgba(0,0,0,.4); font-size: 12px; font-weight: 950; letter-spacing: .16em; text-transform: uppercase; }
+      .quote { display: grid; grid-template-columns: 1fr 420px; gap: 20px; }
+      .quote-main p { margin: 20px 0 28px; font-size: clamp(28px, 4vw, 42px); line-height: 1.08; font-weight: 850; color: white; }
+      .avatar { width: 56px; height: 56px; display: grid; place-items: center; border-radius: 50%; background: linear-gradient(135deg, var(--flame), rgba(255,255,255,.2)); font-weight: 950; }
+      .person { display: flex; gap: 14px; align-items: center; }
+      .mini { padding: 20px; }
+      .popular { border-color: rgba(255,107,53,.62); background: rgba(255,107,53,.1); position: relative; }
+      .pill { position: absolute; right: 20px; top: 20px; border-radius: 999px; background: var(--flame); padding: 6px 10px; font-size: 12px; font-weight: 950; letter-spacing: .16em; text-transform: uppercase; }
+      .price { margin: 20px 0; font-size: 50px; font-weight: 950; }
+      ul { padding: 0; margin: 28px 0; list-style: none; display: grid; gap: 15px; color: rgba(255,255,255,.78); }
+      li { display: flex; align-items: center; gap: 10px; }
+      li:before { content: "✓"; width: 24px; height: 24px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 50%; background: var(--flame); color: white; font-weight: 950; }
+      footer { border-top: 1px solid var(--line); padding: 50px 20px; }
+      .footer-grid { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 32px; }
+      .foot-links { display: grid; gap: 12px; margin-top: 16px; color: rgba(255,255,255,.58); }
+      .social { display: flex; gap: 12px; margin-top: 24px; }
+      .social a { width: 40px; height: 40px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 50%; font-weight: 950; color: rgba(255,255,255,.65); }
+      .social a:hover { background: var(--flame); border-color: var(--flame); color: white; }
+      .reveal { opacity: 0; transform: translateY(28px); transition: opacity .7s ease, transform .7s ease; }
+      .reveal.is-visible { opacity: 1; transform: translateY(0); }
+      @keyframes float {
+        0%, 100% { transform: translate3d(0, 0, 0); opacity: .22; }
+        50% { transform: translate3d(14px, -22px, 0); opacity: .82; }
+      }
+      @media (max-width: 900px) {
+        .links { display: none; }
+        .grid-4, .grid-3, .quote, .footer-grid { grid-template-columns: 1fr; }
+        .recipe:before { display: none; }
+      }
+      @media (max-width: 560px) {
+        .nav .button { display: none; }
+        .cta-row .button { width: 100%; }
+        h1 { font-size: 56px; }
+        section { padding: 76px 20px; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="nav">
+      <div class="nav-inner">
+        <a class="brand" href="#home"><span class="logo">▲</span><span>Let's Cook AI<span class="tag">Prompt. Cook. Convert.</span></span></a>
+        <nav class="links"><a href="#services">Services</a><a href="#portfolio">Portfolio</a><a href="#process">Process</a><a href="#pricing">Pricing</a></nav>
+        <a class="button primary" href="#pricing">Book a Cook</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" id="home">
+        <span class="orb" style="left:12%;top:22%"></span><span class="orb" style="left:78%;top:18%;animation-delay:.7s"></span><span class="orb" style="left:88%;top:62%;animation-delay:1.4s"></span><span class="orb" style="left:20%;top:74%;animation-delay:2s"></span>
+        <div class="wrap">
+          <div class="badge reveal">✓ Trusted by 50+ brands</div>
+          <h1 class="reveal">AI Video Ads That Actually <span class="flame">Convert</span></h1>
+          <p class="reveal">We cook up scroll-stopping video ads using generative AI. No actors. No cameras. Just results.</p>
+          <div class="cta-row reveal"><a class="button primary" href="#pricing">Get Started →</a><a class="button ghost" href="#portfolio">▶ View Our Work</a></div>
+        </div>
+      </section>
+
+      <section id="services"><div class="wrap"><span class="kicker reveal">Services</span><h2 class="reveal">What We Cook</h2><div class="grid-4">
+        <article class="card reveal"><div class="icon">🎬</div><h3>AI Video Ads</h3><p>Scroll-stopping ads that convert viewers into customers</p></article>
+        <article class="card reveal"><div class="icon">✦</div><h3>Brand Storytelling</h3><p>Cinematic narratives powered by AI</p></article>
+        <article class="card reveal"><div class="icon">▣</div><h3>Product Demos</h3><p>Show, don't tell with AI-generated demos</p></article>
+        <article class="card reveal"><div class="icon">✎</div><h3>Social Content</h3><p>Endless content variations for every platform</p></article>
+      </div></div></section>
+
+      <section id="process"><div class="wrap"><span class="kicker reveal">Process</span><h2 class="reveal">Our Recipe</h2><div class="grid-3 recipe">
+        <article class="card step reveal"><div class="number">1</div><h3>PROMPT</h3><p>We strategize your message</p></article>
+        <article class="card step reveal"><div class="number">2</div><h3>COOK</h3><p>AI generates your video</p></article>
+        <article class="card step reveal"><div class="number">3</div><h3>CONVERT</h3><p>You get results</p></article>
+      </div></div></section>
+
+      <section><div class="wrap stats reveal"><div class="stats-inner grid-4">
+        <div class="stat"><strong>500K+</strong><span>Views Generated</span></div><div class="stat"><strong>3.2x</strong><span>Average CTR Increase</span></div><div class="stat"><strong>50+</strong><span>Brands Cooked For</span></div><div class="stat"><strong>24-48hr</strong><span>Turnaround</span></div>
+      </div></div></section>
+
+      <section id="portfolio"><div class="wrap"><span class="kicker reveal">Portfolio</span><h2 class="reveal">Fresh Out The Kitchen</h2><div class="grid-3">
+        <article class="card reveal"><div class="thumb"><span class="metric">+218% CTR</span><span class="play">▶</span></div><h3>GlowLab</h3><p>AI beauty launch film</p></article>
+        <article class="card reveal"><div class="thumb two"><span class="metric">1.8M impressions</span><span class="play">▶</span></div><h3>NexaFit</h3><p>Performance wear social cuts</p></article>
+        <article class="card reveal"><div class="thumb three"><span class="metric">-42% CPA</span><span class="play">▶</span></div><h3>OrbitPay</h3><p>Fintech product demo</p></article>
+      </div></div></section>
+
+      <section><div class="wrap"><span class="kicker reveal">Testimonials</span><h2 class="reveal">Proof It Sizzles</h2><div class="quote">
+        <article class="card quote-main reveal"><div class="flame">★★★★★</div><p>"Let's Cook AI gave us a campaign that looked expensive, tested fast, and beat our studio ads in the first week."</p><div class="person"><div class="avatar">MC</div><div><strong>Maya Chen</strong><div class="muted">CMO, GlowLab</div></div></div></article>
+        <div class="grid-3" style="grid-template-columns:1fr"><article class="card mini reveal"><strong>Maya Chen</strong><div class="muted">CMO, GlowLab</div></article><article class="card mini reveal"><strong>Andre James</strong><div class="muted">Founder, NexaFit</div></article><article class="card mini reveal"><strong>Sofia Rahman</strong><div class="muted">Growth Lead, OrbitPay</div></article></div>
+      </div></div></section>
+
+      <section id="pricing"><div class="wrap"><span class="kicker reveal">Pricing</span><h2 class="reveal">Ready to Cook?</h2><div class="grid-3">
+        <article class="card reveal"><h3>Starter</h3><div class="price">$1,500</div><p>For launches, tests, and single-offer campaigns.</p><ul><li>1 AI video ad</li><li>3 aspect ratios</li><li>Hook and script strategy</li><li>48hr delivery</li></ul><a class="button primary" style="width:100%" href="mailto:contact@letscookai.com">Get Started →</a></article>
+        <article class="card popular reveal"><span class="pill">Popular</span><h3>Growth</h3><div class="price">$4,500</div><p>For brands scaling paid social creative.</p><ul><li>4 AI video ads</li><li>12 platform-ready cuts</li><li>A/B hook variations</li><li>Priority 24-48hr delivery</li></ul><a class="button primary" style="width:100%" href="mailto:contact@letscookai.com">Get Started →</a></article>
+        <article class="card reveal"><h3>Enterprise</h3><div class="price">Custom</div><p>For high-volume creative engines and teams.</p><ul><li>Monthly creative pipeline</li><li>Dedicated AI art direction</li><li>Custom reporting</li><li>Team workflow support</li></ul><a class="button primary" style="width:100%" href="mailto:contact@letscookai.com">Get Started →</a></article>
+      </div></div></section>
+    </main>
+
+    <footer><div class="wrap footer-grid">
+      <div><a class="brand" href="#home"><span class="logo">▲</span><span>Let's Cook AI<span class="tag">Prompt. Cook. Convert.</span></span></a><p class="muted">AI-native creative for brands that need faster testing, stronger hooks, and video ads built to perform.</p></div>
+      <div><strong>Quick Links</strong><div class="foot-links"><a href="#services">Services</a><a href="#portfolio">Portfolio</a><a href="#home">About</a><a href="mailto:contact@letscookai.com">Contact</a></div></div>
+      <div><strong>Contact</strong><div class="foot-links"><a href="mailto:contact@letscookai.com">contact@letscookai.com</a></div><div class="social"><a href="#home">in</a><a href="#home">x</a><a href="#home">ig</a></div></div>
+    </div><div class="wrap" style="margin-top:38px;color:rgba(255,255,255,.38);font-size:14px">© 2026 Let's Cook AI. All rights reserved.</div></footer>
+
+    <script>
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) entry.target.classList.add("is-visible");
+        });
+      }, { threshold: .16 });
+      document.querySelectorAll(".reveal").forEach(element => observer.observe(element));
+    </script>
+  </body>
+</html>
